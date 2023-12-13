@@ -2,7 +2,6 @@ package com.example.chatterbox.ui.screen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +17,8 @@ import com.example.chatterbox.data.local.AppDatabase
 import com.example.chatterbox.data.local.entity.Assistant
 import com.example.chatterbox.data.local.entity.Thread
 import com.example.chatterbox.ui.navigation.Screen
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 enum class Character(val characterName: String, val assistantId: String) {
@@ -35,24 +36,28 @@ fun MainScreen(navController: NavHostController) {
     val db = remember {
         AppDatabase.getDatabase(context)
     }
-    val assistantList = db.assistantDao().getAssistantAll().collectAsState(initial = emptyList()).value
+    val openAI = OpenAI(BuildConfig.OPENAI_API_KEY)
+    val mAuth =  FirebaseAuth.getInstance()
+    val currentUid = mAuth.currentUser?.uid ?: ""
+    val assistants =
+        db.assistantDao().getAssistantsByUid(currentUid).collectAsState(initial = emptyList()).value
+
     val scope = rememberCoroutineScope()
     Column {
         Row {
             Button(onClick = {
-                val newAssistantId = Assistant(Character.OLAF.assistantId)
-                for(assistantId in assistantList) {
-                    if(newAssistantId != assistantId) {
-                        val openAI = OpenAI(BuildConfig.OPENAI_API_KEY)
-                        db.assistantDao().insertAssistantAll(newAssistantId)
-                        scope.launch {
-                            val threadId = openAI.thread().id.id
-                            val thread = Thread(threadId, newAssistantId.assistantId)
-                            db.threadDao().insertThreadAll(thread)
-                        }
+                val newAssistantId = currentUid + Character.OLAF.assistantId
+                if (newAssistantId !in assistants) {
+                    val newAssistant = Assistant(newAssistantId, currentUid)
+                    scope.launch(Dispatchers.IO) {
+                        db.assistantDao().insertAssistantAll(newAssistant)
+                        val thread = openAI.thread()
+                        val threadId = thread.id.id
+                        val thread2 = Thread(threadId, newAssistant.assistantId)
+                        db.threadDao().insertThreadAll(thread2)
                     }
                 }
-                navController.navigate(Screen.Chat.route + "/" + newAssistantId.assistantId)
+                navController.navigate(Screen.Chat.route + "/${newAssistantId}")
             }) {
                 Text(text = "올라프")
             }

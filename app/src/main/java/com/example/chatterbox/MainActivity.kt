@@ -17,11 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import com.example.chatterbox.data.local.AppDatabase
+import com.example.chatterbox.data.local.entity.User
 import com.example.chatterbox.ui.navigation.Screen
 import com.example.chatterbox.ui.screen.ChatScreen
 import com.example.chatterbox.ui.screen.DiaryScreen
@@ -29,13 +29,13 @@ import com.example.chatterbox.ui.screen.MainScreen
 import com.example.chatterbox.ui.screen.OnboardScreen
 import com.example.chatterbox.ui.screen.ProfileScreen
 import com.example.chatterbox.ui.screen.SignInScreen.SignInScreen
+import com.example.chatterbox.ui.screen.SignInScreen.SignInViewModel
 import com.example.chatterbox.ui.theme.ChatterboxTheme
 import com.example.chatterbox.utils.GoogleAuthUiClient
-import com.example.chatterbox.ui.screen.SignInScreen.SignInViewModel
 import com.google.android.gms.auth.api.identity.Identity
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class MainActivity : ComponentActivity() {
@@ -57,6 +57,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    val db = remember {
+                        AppDatabase.getDatabase(this)
+                    }
                     val navController = rememberNavController()
                     val startDestination =
                         if (googleAuthUiClient.getSignedInUser() == null) {
@@ -64,7 +67,6 @@ class MainActivity : ComponentActivity() {
                         } else {
                             Screen.Main.route
                         }
-
                     NavHost(navController = navController, startDestination = startDestination) {
                         composable(Screen.SignIn.route) {
                             val viewModel = viewModel<SignInViewModel>()
@@ -86,12 +88,15 @@ class MainActivity : ComponentActivity() {
                                 if (state.isSignInSuccessful) {
                                     Toast.makeText(applicationContext, "로그인 성공", Toast.LENGTH_SHORT)
                                         .show()
+                                    val userId = googleAuthUiClient.getSignedInUser()?.userId!!
+                                    withContext(Dispatchers.IO) {
+                                        db.userDao().insertUser(User(userId))
+                                    }
                                     navController.navigate(Screen.Main.route) {
                                         popUpTo(Screen.SignIn.route) { inclusive = true }
                                     }
                                     viewModel.resetState()
                                 }
-
                             }
                             SignInScreen(
                                 navController = navController,
@@ -108,7 +113,7 @@ class MainActivity : ComponentActivity() {
                                 })
                         }
                         composable(Screen.Onboard.route) { OnboardScreen(navController) }
-                        composable(Screen.Main.route) { MainScreen(navController) }
+                        composable(Screen.Main.route) { MainScreen(navController = navController)}
                         composable(Screen.Profile.route) {
                             ProfileScreen(
                                 navController,
