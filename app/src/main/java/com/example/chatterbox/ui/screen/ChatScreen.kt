@@ -1,20 +1,26 @@
 package com.example.chatterbox.ui.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -43,36 +49,22 @@ import com.aallam.openai.api.thread.ThreadId
 import com.aallam.openai.client.OpenAI
 import com.example.chatterbox.BuildConfig
 import com.example.chatterbox.data.local.AppDatabase
-import com.example.chatterbox.data.local.entity.Assistant
 import com.example.chatterbox.data.local.entity.Message
-import com.example.chatterbox.data.local.entity.Thread
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalComposeUiApi::class, BetaOpenAI::class)
 @Composable
-fun ChatScreen(navController: NavHostController) {
+fun ChatScreen(navController: NavHostController, assistantId: String) {
     val context = LocalContext.current
     val db = remember {
         AppDatabase.getDatabase(context)
     }
-    val assistant = Assistant("asst_pKRMmMds8HVj6cWNmhhjZxGh")
-    val thread = Thread("thread_DAfbzsiCCUzN0m6tHg0TNyuC", "asst_pKRMmMds8HVj6cWNmhhjZxGh")
-    val assistantList = db.assistantDao().getAssistantAll().collectAsState(initial = emptyList()).value
-    for(a in assistantList) {
-        if(assistant != a) {
-            LaunchedEffect(Unit) {
-                withContext(Dispatchers.IO) {
-                    db.assistantDao().insertAssistantAll(assistant)
-                    db.threadDao().insertThreadAll(thread)
-                }
-            }
-        }
-    }
-    val messageList by db.messageDao().getMessageAll().collectAsState(initial = emptyList())
+    val threadId =
+        db.threadDao().getThreadIdByAssistantId(assistantId).collectAsState(initial = "").value
+    val messageList by db.messageDao().getMessagesByThreadId(threadId).collectAsState(initial = emptyList())
     val scope = rememberCoroutineScope()
     Text(text = "chat")
     val apiKey = BuildConfig.OPENAI_API_KEY
@@ -82,59 +74,83 @@ fun ChatScreen(navController: NavHostController) {
     )
 //    var assistant: Assistant?
 //    LaunchedEffect(Unit) {
-//        assistant = openAI.assistant(id = AssistantId("asst_pKRMmMds8HVj6cWNmhhjZxGh"))
-////        아래 코드로 assistant 수정 가능
-////        assistant = openAI.assistant(id = AssistantId("asst_pKRMmMds8HVj6cWNmhhjZxGh"),
-////            request = AssistantRequest(
-////                instructions = "수정 instruction",
-////                tools = listOf(AssistantTool.RetrievalTool), // tool 추가 가능
-////                model = ModelId("gpt-4"), // 모델 변경
-////                fileIds = listOf(FileId("file-abc123"), FileId("file-abc123")), // 파일 추가가능
-////            )
-////        )
-////        만약 사용자가 thread id 없으면 생성해주어야 함.
-////        val thread = openAI.thread()
+//        assistant = openAI.assistant(id = AssistantId(assistantId),
+//            request = AssistantRequest(
+//                instructions = "수정 instruction",
+//                tools = listOf(AssistantTool.RetrievalTool), // tool 추가 가능
+//                model = ModelId("gpt-4"), // 모델 변경
+//                fileIds = listOf(FileId("file-abc123"), FileId("file-abc123")), // 파일 추가가능
+//            )
+//        )
 //    }
-
     var userText: String by remember { mutableStateOf("") }
-
-
-    Column {
-        LazyColumn {
-            items(messageList) { message ->
-                MessageContent(message)
+    val scrollState = rememberLazyListState()
+//    LaunchedEffect(messageList) {
+//        scrollState.scrollToItem(index = messageList.lastIndex)
+//    }
+    val characterNameFromAssistantId = Character.values().find { it.assistantId == assistantId }?.characterName
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFE6F2FF))
+    ) {
+        Column {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.92f)
+                    .background(Color.Transparent),
+                verticalArrangement = Arrangement.Bottom,
+                state = scrollState
+            ) {
+                items(messageList) { message ->
+                    MessageContent(message)
+                }
             }
-        }
-        TextField(value = userText, onValueChange = { userText = it} )
-        IconButton(onClick = {
-            scope.launch(Dispatchers.IO) {
-                val message = openAI.message(
-                    threadId = ThreadId("thread_DAfbzsiCCUzN0m6tHg0TNyuC"),
-                    request = MessageRequest(
-                        role = Role.User,
-                        content = userText
-                    )
-                )
-                // userText db 추가
-                val userMessage = Message(threadId = "thread_DAfbzsiCCUzN0m6tHg0TNyuC", userRole = true, content = userText)
-                db.messageDao().insertMessageAll(userMessage)
-                userText = ""
-                val run = openAI.createRun(
-                    threadId = ThreadId("thread_DAfbzsiCCUzN0m6tHg0TNyuC"),
-                    request = RunRequest(assistantId = AssistantId("asst_pKRMmMds8HVj6cWNmhhjZxGh")),
-                )
-                do {
-                    delay(1500)
-                    val retrievedRun = openAI.getRun(threadId = ThreadId("thread_DAfbzsiCCUzN0m6tHg0TNyuC"), runId = run.id)
-                } while (retrievedRun.status != Status.Completed)
-                val assistantMessages = openAI.messages(ThreadId("thread_DAfbzsiCCUzN0m6tHg0TNyuC"))
-                val textContext = assistantMessages[0].content.first() as MessageContent.Text
-                // textContext.value db 추가
-                val chatMessage = Message(threadId = "thread_DAfbzsiCCUzN0m6tHg0TNyuC", userRole = false, content = textContext.text.value)
-                db.messageDao().insertMessageAll(chatMessage)
+
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(value = userText, onValueChange = { userText = it },
+                    placeholder = { Text("${characterNameFromAssistantId}와 대화해 보세요!") })
+                IconButton(onClick = {
+                    scope.launch(Dispatchers.IO) {
+                        openAI.message(
+                            threadId = ThreadId(threadId),
+                            request = MessageRequest(
+                                role = Role.User,
+                                content = userText
+                            )
+                        )
+                        // userText db 추가
+                        val userMessage =
+                            Message(threadId = threadId, userRole = true, content = userText)
+                        db.messageDao().insertMessageAll(userMessage)
+                        userText = ""
+                        val run = openAI.createRun(
+                            threadId = ThreadId(threadId),
+                            request = RunRequest(assistantId = AssistantId(assistantId)),
+                        )
+                        do {
+                            delay(1000)
+                            val retrievedRun =
+                                openAI.getRun(threadId = ThreadId(threadId), runId = run.id)
+                        } while (retrievedRun.status != Status.Completed)
+                        val assistantMessages = openAI.messages(ThreadId(threadId))
+                        val textContext =
+                            assistantMessages[0].content.first() as MessageContent.Text
+                        // textContext.value db 추가
+                        val chatMessage = Message(
+                            threadId = threadId,
+                            userRole = false,
+                            content = textContext.text.value
+                        )
+                        db.messageDao().insertMessageAll(chatMessage)
+                    }
+                }) {
+                    Icon(imageVector = Icons.Filled.Send, contentDescription = "send")
+                }
             }
-        }) {
-            Icon(imageVector = Icons.Filled.Send, contentDescription = "send")
         }
     }
 }
@@ -143,15 +159,15 @@ fun ChatScreen(navController: NavHostController) {
 fun MessageContent(message: Message) {
     Box(
         modifier = Modifier
-            .fillMaxWidth()
             .padding(8.dp)
-            .background(if (message.userRole) Color.Green else Color.Blue)
+            .background(if (message.userRole) Color(0xFF2FCC59) else Color(0xFF22ABF3))
             .clip(MaterialTheme.shapes.medium)
-            .padding(16.dp)
+            .padding(8.dp)
     ) {
         Text(
             text = message.content,
             color = Color.White,
+            modifier = Modifier.fillMaxWidth(),
             textAlign = if (message.userRole) TextAlign.End else TextAlign.Start
         )
     }

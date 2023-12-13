@@ -17,9 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.chatterbox.ui.navigation.Screen
 import com.example.chatterbox.ui.screen.ChatScreen
 import com.example.chatterbox.ui.screen.DiaryScreen
@@ -126,7 +128,10 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
-                        composable(Screen.Chat.route) { ChatScreen(navController) }
+                        composable(Screen.Chat.route + "/{assistantId}") { backStackEntry ->
+                            backStackEntry.arguments?.getString("assistantId")
+                                ?.let { ChatScreen(navController, it) }
+                        }
                         composable(Screen.Diary.route) { DiaryScreen(navController) }
                     }
                 }
