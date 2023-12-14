@@ -14,14 +14,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.example.chatterbox.utils.UserData
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun ProfileScreen(
-    navController: NavHostController,
     userdata: UserData?,
     onSignOut: () -> Unit
 ) {

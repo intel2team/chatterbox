@@ -1,5 +1,6 @@
 package com.example.chatterbox
 
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -7,6 +8,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -28,7 +30,6 @@ import com.example.chatterbox.ui.screen.DiaryScreen
 import com.example.chatterbox.ui.screen.MainScreen
 import com.example.chatterbox.ui.screen.OnboardScreen
 import com.example.chatterbox.ui.screen.ProfileScreen
-import com.example.chatterbox.ui.screen.SignInScreen.SignInScreen
 import com.example.chatterbox.ui.screen.SignInScreen.SignInViewModel
 import com.example.chatterbox.ui.theme.ChatterboxTheme
 import com.example.chatterbox.utils.GoogleAuthUiClient
@@ -48,6 +49,7 @@ class MainActivity : ComponentActivity() {
     }
 //    private lateinit var mAuth: FirebaseAuth
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -63,12 +65,12 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     val startDestination =
                         if (googleAuthUiClient.getSignedInUser() == null) {
-                            Screen.SignIn.route
+                            Screen.Onboard.route
                         } else {
                             Screen.Main.route
                         }
                     NavHost(navController = navController, startDestination = startDestination) {
-                        composable(Screen.SignIn.route) {
+                        composable(Screen.Onboard.route) {
                             val viewModel = viewModel<SignInViewModel>()
                             val state by viewModel.state.collectAsStateWithLifecycle()
                             val launcher = rememberLauncherForActivityResult(
@@ -93,13 +95,12 @@ class MainActivity : ComponentActivity() {
                                         db.userDao().insertUser(User(userId))
                                     }
                                     navController.navigate(Screen.Main.route) {
-                                        popUpTo(Screen.SignIn.route) { inclusive = true }
+                                        popUpTo(Screen.Onboard.route) { inclusive = true }
                                     }
                                     viewModel.resetState()
                                 }
                             }
-                            SignInScreen(
-                                navController = navController,
+                            OnboardScreen(
                                 state = state,
                                 onSignInClick = {
                                     lifecycleScope.launch {
@@ -110,13 +111,11 @@ class MainActivity : ComponentActivity() {
                                             ).build()
                                         )
                                     }
-                                })
-                        }
-                        composable(Screen.Onboard.route) { OnboardScreen(navController) }
+                                }
+                            ) }
                         composable(Screen.Main.route) { MainScreen(navController = navController)}
                         composable(Screen.Profile.route) {
                             ProfileScreen(
-                                navController,
                                 userdata = googleAuthUiClient.getSignedInUser(),
                                 onSignOut = {
                                     lifecycleScope.launch {
@@ -127,7 +126,7 @@ class MainActivity : ComponentActivity() {
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }
-                                    navController.navigate(Screen.SignIn.route) {
+                                    navController.navigate(Screen.Onboard.route) {
                                         popUpTo(Screen.Main.route) { inclusive = true }
                                     }
                                 }

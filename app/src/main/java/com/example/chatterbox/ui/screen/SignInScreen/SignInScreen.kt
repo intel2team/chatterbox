@@ -33,7 +33,6 @@ import com.google.android.gms.auth.api.identity.SignInClient
 
 @Composable
 fun SignInScreen(
-    navController: NavHostController,
     state: SignInState,
     onSignInClick: () -> Unit
 ) {
@@ -43,51 +42,32 @@ fun SignInScreen(
             Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
         }
     }
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+    Card(
+        modifier = Modifier
+            .padding(start = 30.dp, end = 30.dp)
+            .height(55.dp)
+            .fillMaxSize()
+            .clickable { onSignInClick() },
+        shape = RoundedCornerShape(10.dp),
+        border = BorderStroke(width = 1.5.dp, color = Color.Black),
+        elevation = CardDefaults.cardElevation(5.dp)
     ) {
-        Card(
-            modifier = Modifier
-                .padding(start = 30.dp, end = 30.dp)
-                .height(55.dp)
-                .fillMaxWidth()
-                .clickable { onSignInClick() },
-            shape = RoundedCornerShape(10.dp),
-            border = BorderStroke(width = 1.5.dp, color = Color.Black),
-            elevation = CardDefaults.cardElevation(5.dp)
+        Row(
+            Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                Modifier.fillMaxSize(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    modifier = Modifier
-                        .padding(start = 15.dp)
-                        .size(32.dp),
-                    painter = painterResource(id = R.drawable.google_logo),
-                    contentDescription = "google icon logo",
-                )
-                Text(
-                    text = "login With Google",
-                    modifier = Modifier.padding(start = 20.dp),
-                    fontSize = MaterialTheme.typography.bodyMedium.fontSize
-                )
-            }
+            Image(
+                modifier = Modifier
+                    .padding(start = 15.dp)
+                    .size(32.dp),
+                painter = painterResource(id = R.drawable.google_logo),
+                contentDescription = "google icon logo",
+            )
+            Text(
+                text = "Sign In With Google",
+                modifier = Modifier.padding(start = 20.dp),
+                fontSize = MaterialTheme.typography.bodyMedium.fontSize
+            )
         }
     }
-
-
-//    signInRequest = BeginSignInRequest.builder()
-//        .setGoogleIdTokenRequestOptions(
-//            BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
-//                .setSupported(true)
-//                // Your server's client ID, not your Android client ID.
-//                .setServerClientId(getString(R.string.your_web_client_id))
-//                // Only show accounts previously used to sign in.
-//                .setFilterByAuthorizedAccounts(true)
-//                .build())
-//        .build()
 }

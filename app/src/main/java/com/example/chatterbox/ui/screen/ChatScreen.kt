@@ -57,8 +57,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
-private lateinit var mAuth: FirebaseAuth
-
 @OptIn(ExperimentalComposeUiApi::class, BetaOpenAI::class)
 @Composable
 fun ChatScreen(navController: NavHostController, newAssistantId: String) {
