@@ -1,6 +1,5 @@
 package com.example.chatterbox.ui.screen
 
-
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -37,9 +36,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.chatterbox.R
 
+
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
-fun OnboardScreen_01(navController: NavHostController) {
+fun OnboardScreen_03(navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -49,7 +49,7 @@ fun OnboardScreen_01(navController: NavHostController) {
             modifier = Modifier.fillMaxSize()
         ) {
             Image(
-                painter = painterResource(id = R.drawable.rectangle_1),
+                painter = painterResource(id = R.drawable.rectangle_3),
                 contentDescription = "background",
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier
@@ -58,7 +58,7 @@ fun OnboardScreen_01(navController: NavHostController) {
                     .padding(top = 20.dp)
             )
             Text(
-                text = "Chracter",
+                text = "Feeling",
                 style = TextStyle(
                     fontSize = 30.sp,
                     fontFamily = FontFamily(Font(R.font.roboto_regular)),
@@ -70,7 +70,7 @@ fun OnboardScreen_01(navController: NavHostController) {
                     .padding(start = 33.dp)
             )
             Text(
-                text = "유명 캐릭터와의 직접 대화를 진행합니다\n나만의 친구가 이제는 아이언맨, 백설공주 등 \n유명 캐릭터 4명과 함께합니다.",
+                text = "오늘의 기분\n이제 캐릭터와 이야기해서 마음을 공유해보세요\n캐릭터가 당신의 마음을 파악해서 공감합니다.",
                 style = TextStyle(
                     fontSize = 16.sp,
                     fontFamily = FontFamily(Font(R.font.roboto_light)),
@@ -90,32 +90,32 @@ fun OnboardScreen_01(navController: NavHostController) {
             ) {
                 Box(
                     modifier = Modifier
+                        .size(13.dp, 13.dp)
+                        .background(color = Color(0xFFF9F9F9), shape = RoundedCornerShape(50.dp))
+                        .background(
+                            color = Color(0x42384212),
+                            shape = RoundedCornerShape(size = 50.dp)
+                        )
+//                    .clickable { onClick() } 클릭 이벤트
+                )
+                Spacer(modifier = Modifier.width(5.dp))
+                Box(
+                    modifier = Modifier
+                        .size(13.dp, 13.dp)
+                        .background(color = Color(0xFFF9F9F9), shape = RoundedCornerShape(50.dp))
+                        .background(
+                            color = Color(0x42384212),
+                            shape = RoundedCornerShape(size = 50.dp)
+                        )
+//                    .clickable { onClick() } 클릭 이벤트
+                )
+                Spacer(modifier = Modifier.width(5.dp))
+                Box(
+                    modifier = Modifier
                         .size(33.dp, 13.dp)
                         .background(
                             color = Color(0xFF048ABF),
                             shape = RoundedCornerShape(50.dp)
-                        )
-//                    .clickable { onClick() } 클릭 이벤트
-                )
-                Spacer(modifier = Modifier.width(5.dp))
-                Box(
-                    modifier = Modifier
-                        .size(13.dp, 13.dp)
-                        .background(color = Color(0xFFF9F9F9), shape = RoundedCornerShape(50.dp))
-                        .background(
-                            color = Color(0x42384212),
-                            shape = RoundedCornerShape(size = 50.dp)
-                        )
-//                    .clickable { onClick() } 클릭 이벤트
-                )
-                Spacer(modifier = Modifier.width(5.dp))
-                Box(
-                    modifier = Modifier
-                        .size(13.dp, 13.dp)
-                        .background(color = Color(0xFFF9F9F9), shape = RoundedCornerShape(50.dp))
-                        .background(
-                            color = Color(0x42384212),
-                            shape = RoundedCornerShape(size = 50.dp)
                         )
 //                    .clickable { onClick() } 클릭 이벤트
                 )
@@ -161,14 +161,14 @@ fun OnboardScreen_01(navController: NavHostController) {
                     .height(15.dp)
 
             )
-            Spacer(modifier = Modifier.height(60.dp)) // Add vertical spacing
+            Spacer(modifier = Modifier.height(55.dp)) // Add vertical spacing
             Image(
-                painter = painterResource(id = R.drawable.ironman),
+                painter = painterResource(id = R.drawable.olaf),
                 contentDescription = "",
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .width(450.dp)
-                    .height(520.dp)
+                    .height(480.dp)
             )
         }
     }
@@ -177,6 +177,6 @@ fun OnboardScreen_01(navController: NavHostController) {
 @RequiresApi(Build.VERSION_CODES.Q)
 @Preview(showBackground = true)
 @Composable
-fun OnboardScreenPreview() {
-    OnboardScreen_01(navController = rememberNavController())
+fun OnboardScreenPreview_03() {
+    OnboardScreen_03(navController = rememberNavController())
 }

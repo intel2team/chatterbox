@@ -1,6 +1,5 @@
 package com.example.chatterbox.ui.screen
 
-
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -37,9 +36,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.chatterbox.R
 
+
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
-fun OnboardScreen_01(navController: NavHostController) {
+fun OnboardScreen_04(navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -49,7 +49,7 @@ fun OnboardScreen_01(navController: NavHostController) {
             modifier = Modifier.fillMaxSize()
         ) {
             Image(
-                painter = painterResource(id = R.drawable.rectangle_1),
+                painter = painterResource(id = R.drawable.rectangle_4),
                 contentDescription = "background",
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier
@@ -58,7 +58,7 @@ fun OnboardScreen_01(navController: NavHostController) {
                     .padding(top = 20.dp)
             )
             Text(
-                text = "Chracter",
+                text = "Information",
                 style = TextStyle(
                     fontSize = 30.sp,
                     fontFamily = FontFamily(Font(R.font.roboto_regular)),
@@ -70,7 +70,7 @@ fun OnboardScreen_01(navController: NavHostController) {
                     .padding(start = 33.dp)
             )
             Text(
-                text = "유명 캐릭터와의 직접 대화를 진행합니다\n나만의 친구가 이제는 아이언맨, 백설공주 등 \n유명 캐릭터 4명과 함께합니다.",
+                text = "궁금하고 원하는 것을\n램프의 요정 지니에게 쉽게 물어보세요\nChat-GPT를 통해서 정보를 제공해드립니다.",
                 style = TextStyle(
                     fontSize = 16.sp,
                     fontFamily = FontFamily(Font(R.font.roboto_light)),
@@ -88,45 +88,46 @@ fun OnboardScreen_01(navController: NavHostController) {
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
+
+                Box(
+                    modifier = Modifier
+                        .size(13.dp, 13.dp)
+                        .background(color = Color(0xFFF9F9F9), shape = RoundedCornerShape(50.dp))
+                        .background(
+                            color = Color(0x42384212),
+                            shape = RoundedCornerShape(size = 50.dp)
+                        )
+//                    .clickable { onClick() } 클릭 이벤트
+                )
+                Spacer(modifier = Modifier.width(5.dp))
+                Box(
+                    modifier = Modifier
+                        .size(13.dp, 13.dp)
+                        .background(color = Color(0xFFF9F9F9), shape = RoundedCornerShape(50.dp))
+                        .background(
+                            color = Color(0x42384212),
+                            shape = RoundedCornerShape(size = 50.dp)
+                        )
+//                    .clickable { onClick() } 클릭 이벤트
+                )
+                Spacer(modifier = Modifier.width(5.dp))
+                Box(
+                    modifier = Modifier
+                        .size(13.dp, 13.dp)
+                        .background(color = Color(0xFFF9F9F9), shape = RoundedCornerShape(50.dp))
+                        .background(
+                            color = Color(0x42384212),
+                            shape = RoundedCornerShape(size = 50.dp)
+                        )
+//                    .clickable { onClick() } 클릭 이벤트
+                )
+                Spacer(modifier = Modifier.width(5.dp))
                 Box(
                     modifier = Modifier
                         .size(33.dp, 13.dp)
                         .background(
                             color = Color(0xFF048ABF),
                             shape = RoundedCornerShape(50.dp)
-                        )
-//                    .clickable { onClick() } 클릭 이벤트
-                )
-                Spacer(modifier = Modifier.width(5.dp))
-                Box(
-                    modifier = Modifier
-                        .size(13.dp, 13.dp)
-                        .background(color = Color(0xFFF9F9F9), shape = RoundedCornerShape(50.dp))
-                        .background(
-                            color = Color(0x42384212),
-                            shape = RoundedCornerShape(size = 50.dp)
-                        )
-//                    .clickable { onClick() } 클릭 이벤트
-                )
-                Spacer(modifier = Modifier.width(5.dp))
-                Box(
-                    modifier = Modifier
-                        .size(13.dp, 13.dp)
-                        .background(color = Color(0xFFF9F9F9), shape = RoundedCornerShape(50.dp))
-                        .background(
-                            color = Color(0x42384212),
-                            shape = RoundedCornerShape(size = 50.dp)
-                        )
-//                    .clickable { onClick() } 클릭 이벤트
-                )
-                Spacer(modifier = Modifier.width(5.dp))
-                Box(
-                    modifier = Modifier
-                        .size(13.dp, 13.dp)
-                        .background(color = Color(0xFFF9F9F9), shape = RoundedCornerShape(50.dp))
-                        .background(
-                            color = Color(0x42384212),
-                            shape = RoundedCornerShape(size = 50.dp)
                         )
 //                    .clickable { onClick() } 클릭 이벤트
                 )
@@ -148,7 +149,9 @@ fun OnboardScreen_01(navController: NavHostController) {
 
         }
         Column(
-            modifier = Modifier.fillMaxSize().padding(top = 40.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 50.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -161,14 +164,14 @@ fun OnboardScreen_01(navController: NavHostController) {
                     .height(15.dp)
 
             )
-            Spacer(modifier = Modifier.height(60.dp)) // Add vertical spacing
+            Spacer(modifier = Modifier.height(40.dp)) // Add vertical spacing
             Image(
-                painter = painterResource(id = R.drawable.ironman),
+                painter = painterResource(id = R.drawable.genie),
                 contentDescription = "",
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
                 modifier = Modifier
-                    .width(450.dp)
-                    .height(520.dp)
+                    .width(500.dp)
+                    .height(500.dp)
             )
         }
     }
@@ -177,6 +180,6 @@ fun OnboardScreen_01(navController: NavHostController) {
 @RequiresApi(Build.VERSION_CODES.Q)
 @Preview(showBackground = true)
 @Composable
-fun OnboardScreenPreview() {
-    OnboardScreen_01(navController = rememberNavController())
+fun OnboardScreenPreview_04() {
+    OnboardScreen_04(navController = rememberNavController())
 }
