@@ -100,12 +100,14 @@ fun OnboardScreen(
             item = items,
             pagerState = pagerState,
         )
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 12.dp)
-        ) {
-            SignInScreen(state, onSignInClick)
+        if (pagerState.currentPage == items.size - 1) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 12.dp)
+            ) {
+                SignInScreen(state, onSignInClick)
+            }
         }
     }
 }
