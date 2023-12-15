@@ -4,6 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 
 @Composable
-fun MainScreen(navController: NavHostController) {
+fun MainScreen_Cha(navController: NavHostController) {
     TODO("Not yet implemented")
 }

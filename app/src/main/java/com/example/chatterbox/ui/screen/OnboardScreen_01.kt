@@ -159,7 +159,6 @@ fun OnboardScreen_01(navController: NavHostController) {
                 modifier = Modifier
                     .width(85.dp)
                     .height(15.dp)
-
             )
             Spacer(modifier = Modifier.height(60.dp)) // Add vertical spacing
             Image(

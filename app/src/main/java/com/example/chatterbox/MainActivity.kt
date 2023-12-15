@@ -11,6 +11,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.example.chatterbox.ui.screen.OnboardScreen_01
+import com.example.chatterbox.ui.screen.OnboardScreen_03
 import com.example.chatterbox.ui.theme.ChatterboxTheme
 
 class MainActivity : ComponentActivity() {
@@ -24,7 +25,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                   OnboardScreen_01(navController = rememberNavController())
+                   OnboardScreen_03(navController = rememberNavController())
 //                    Navigator()
                 }
             }
