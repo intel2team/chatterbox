@@ -2,9 +2,6 @@ package com.example.chatterbox.ui.navigation
 
 sealed class Screen(val route: String) {
     object Onboard : Screen("onboard")
-    object SignIn : Screen("sign_in")
-    object Main : Screen("main")
     object Profile : Screen("profile")
-    object Chat : Screen("chat/{assistantId}")
-    object Diary : Screen("diary")
+    object Chatting : Screen("chatting/{assistantId}")
 }

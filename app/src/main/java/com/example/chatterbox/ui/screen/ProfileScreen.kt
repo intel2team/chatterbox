@@ -40,9 +40,8 @@ fun ProfileScreen(
                 ),
                 loading = {},
                 failure = {
-                    Text(text = "image request failed.")
+                    Text(text = "failed.")
                 }
-
             )
         }
         if (userdata?.userName != null) {

@@ -24,13 +24,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.chatterbox.data.local.AppDatabase
 import com.example.chatterbox.data.local.entity.User
+import com.example.chatterbox.ui.navigation.BottomNavItem
 import com.example.chatterbox.ui.navigation.Screen
-import com.example.chatterbox.ui.screen.ChatScreen
-import com.example.chatterbox.ui.screen.DiaryScreen
-import com.example.chatterbox.ui.screen.MainScreen
+import com.example.chatterbox.ui.screen.ChattingScreen
+import com.example.chatterbox.ui.screen.bottomNavScreen.FriendsScreen
 import com.example.chatterbox.ui.screen.OnboardScreen
 import com.example.chatterbox.ui.screen.ProfileScreen
 import com.example.chatterbox.ui.screen.SignInScreen.SignInViewModel
+import com.example.chatterbox.ui.screen.bottomNavScreen.ChatScreen
+import com.example.chatterbox.ui.screen.bottomNavScreen.OthersScreen
+import com.example.chatterbox.ui.screen.bottomNavScreen.ShopScreen
 import com.example.chatterbox.ui.theme.ChatterboxTheme
 import com.example.chatterbox.utils.GoogleAuthUiClient
 import com.google.android.gms.auth.api.identity.Identity
@@ -67,7 +70,7 @@ class MainActivity : ComponentActivity() {
                         if (googleAuthUiClient.getSignedInUser() == null) {
                             Screen.Onboard.route
                         } else {
-                            Screen.Main.route
+                            BottomNavItem.Friends.route
                         }
                     NavHost(navController = navController, startDestination = startDestination) {
                         composable(Screen.Onboard.route) {
@@ -94,7 +97,7 @@ class MainActivity : ComponentActivity() {
                                     withContext(Dispatchers.IO) {
                                         db.userDao().insertUser(User(userId))
                                     }
-                                    navController.navigate(Screen.Main.route) {
+                                    navController.navigate(BottomNavItem.Friends.route) {
                                         popUpTo(Screen.Onboard.route) { inclusive = true }
                                     }
                                     viewModel.resetState()
@@ -113,7 +116,6 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             ) }
-                        composable(Screen.Main.route) { MainScreen(navController = navController)}
                         composable(Screen.Profile.route) {
                             ProfileScreen(
                                 userdata = googleAuthUiClient.getSignedInUser(),
@@ -127,16 +129,20 @@ class MainActivity : ComponentActivity() {
                                         ).show()
                                     }
                                     navController.navigate(Screen.Onboard.route) {
-                                        popUpTo(Screen.Main.route) { inclusive = true }
+                                        popUpTo(BottomNavItem.Friends.route) { inclusive = true }
                                     }
                                 }
                             )
                         }
-                        composable(Screen.Chat.route + "/{assistantId}") { backStackEntry ->
+                        composable(Screen.Chatting.route + "/{assistantId}") { backStackEntry ->
                             backStackEntry.arguments?.getString("assistantId")
-                                ?.let { ChatScreen(navController, it) }
+                                ?.let { ChattingScreen(navController, it) }
                         }
-                        composable(Screen.Diary.route) { DiaryScreen(navController) }
+                        composable(BottomNavItem.Friends.route) { FriendsScreen(navController, googleAuthUiClient.getSignedInUser()) }
+                        composable(BottomNavItem.Chat.route) { ChatScreen(navController) }
+                        composable(BottomNavItem.Shop.route) { ShopScreen(navController) }
+                        composable(BottomNavItem.Others.route) { OthersScreen(navController) }
+
                     }
                 }
             }
