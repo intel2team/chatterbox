@@ -52,7 +52,7 @@ import com.example.chatterbox.R
 
 
 @Composable
-fun MainScreen_Cha(navController: NavHostController) {
+fun MainScreen_Movie(navController: NavHostController) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -85,75 +85,17 @@ fun MainScreen_Cha(navController: NavHostController) {
                     )
                 )
             }
-            Text(
-                text = "행복이",
-                style = TextStyle(
-                    fontSize = 15.sp,
-                    fontFamily = FontFamily(Font(R.font.roboto_black)),
-                    fontWeight = FontWeight(600),
-                    color = Color.Black,
-                    letterSpacing = 1.65.sp,
-                ),
-                modifier = Modifier.padding(start = 60.dp)
-            )
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(55.dp))
 
             Box {
                 // 배경 이미지
                 Image(
-                    painter = painterResource(id = R.drawable.joy),
+                    painter = painterResource(id = R.drawable.movie_poster),
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
-                Column(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .align(Alignment.BottomCenter)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 40.dp),
-                        horizontalArrangement = Arrangement.spacedBy(20.dp)
-                    ) {
-                        listOf("행복", "자신감", "긍정", "신뢰", "도전정신").forEach {
-                            PosterText(text = it)
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(10.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Box(modifier = Modifier.clickable { }) {
-                            Image(
-                                painter = painterResource(id = R.drawable.posterchat),
-                                contentDescription = null,
-                                contentScale = ContentScale.FillBounds,
-                                modifier = Modifier
-                                    .size(150.dp, 40.dp)
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Box(modifier = Modifier.clickable { }) {
-                            Image(
-                                painter = painterResource(id = R.drawable.postertry),
-                                contentDescription = null,
-                                contentScale = ContentScale.FillBounds,
-                                modifier = Modifier
-                                    .size(150.dp, 40.dp)
-                            )
-                        }
-                    }
-                }
             }
-
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
@@ -170,7 +112,7 @@ fun MainScreen_Cha(navController: NavHostController) {
             )
             Spacer(modifier = Modifier.height(5.dp))
             Text(
-                text = "행복은 담당하는 매일 매일이 행복한 \n행복이",
+                text = "5명의 감정 캐릭터",
                 style = TextStyle(
                     fontSize = 15.sp,
                     fontFamily = FontFamily(Font(R.font.roboto_black)),
@@ -181,9 +123,9 @@ fun MainScreen_Cha(navController: NavHostController) {
                 ),
                 modifier = Modifier.padding(start = 10.dp)
             )
-            Spacer(modifier = Modifier.height(25.dp))
+            Spacer(modifier = Modifier.height(45.dp))
             Text(
-                text = "유사한 캐릭터",
+                text = "캐릭터",
                 style = TextStyle(
                     fontSize = 18.sp,
                     fontFamily = FontFamily(Font(R.font.roboto_black)),
@@ -203,6 +145,13 @@ fun MainScreen_Cha(navController: NavHostController) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Image(
+                    painter = painterResource(id = R.drawable.small_joy),
+                    contentDescription = "image description",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(140.dp, 230.dp)
+                )
+                Image(
                     painter = painterResource(id = R.drawable.anger),
                     contentDescription = "image description",
                     contentScale = ContentScale.Crop,
@@ -216,36 +165,33 @@ fun MainScreen_Cha(navController: NavHostController) {
                     modifier = Modifier
                         .size(140.dp, 230.dp)
                 )
-                Image(
-                    painter = painterResource(id = R.drawable.fear),
-                    contentDescription = "image description",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(140.dp, 230.dp)
-                )
             }
 
             Spacer(modifier = Modifier.height(25.dp))
             Text(
-                text = "캐릭터가 등장한 영화",
+                text = "기능",
                 style = TextStyle(
                     fontSize = 20.sp,
                     fontFamily = FontFamily(Font(R.font.roboto_black)),
                     fontWeight = FontWeight(900),
                     color = Color.Black,
                     letterSpacing = 2.sp,
-                )
+                ),
+                modifier = Modifier.padding(start = 10.dp)
             )
-            Spacer(modifier = Modifier.height(20.dp))
-            Box(modifier = Modifier.clickable { })
-            {
-                Image(
-                    painter = painterResource(id = R.drawable.movie_poster),
-                    contentDescription = "image description",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-            }
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                text = "행복, 분노, 슬픔, 시크, 두려움 캐릭터들과 \n즐거운 감정이야기를 나눠보세요",
+                style = TextStyle(
+                    fontSize = 15.sp,
+                    fontFamily = FontFamily(Font(R.font.roboto_black)),
+                    fontWeight = FontWeight(900),
+                    color = Color(0xFF787878),
+                    letterSpacing = 1.sp,
+                    shadow = Shadow(Color.Gray, offset = Offset(1.0f, 2.0f), blurRadius = 1f)
+                ),
+                modifier = Modifier.padding(start = 10.dp)
+            )
         }
         Box(
             modifier = Modifier
@@ -263,24 +209,8 @@ fun MainScreen_Cha(navController: NavHostController) {
     }
 }
 
-@Composable
-fun PosterText(text: String) {
-    Text(
-        text = text,
-        style = TextStyle(
-            fontSize = 13.sp,
-            fontFamily = FontFamily(Font(R.font.roboto_bold)),
-            fontWeight = FontWeight(700),
-            color = Color(0xFFFFFFFF),
-            textAlign = TextAlign.Center,
-            letterSpacing = 2.sp,
-        )
-    )
-}
-
-
 @Preview(showBackground = true)
 @Composable
-fun MainChaScreenPreview() {
-    MainScreen_Cha(navController = rememberNavController())
+fun MainMovieScreenPreview() {
+    MainScreen_Movie(navController = rememberNavController())
 }

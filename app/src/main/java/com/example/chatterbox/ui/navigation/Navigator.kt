@@ -12,6 +12,8 @@ import com.example.chatterbox.ui.screen.IntroScreen_02
 import com.example.chatterbox.ui.screen.IntroScreen_03
 import com.example.chatterbox.ui.screen.IntroScreen_04
 import com.example.chatterbox.ui.screen.MainScreen_Cha
+import com.example.chatterbox.ui.screen.MainScreen_Full
+import com.example.chatterbox.ui.screen.MainScreen_Movie
 import com.example.chatterbox.ui.screen.OnboardScreen_01
 import com.example.chatterbox.ui.screen.OnboardScreen_02
 import com.example.chatterbox.ui.screen.OnboardScreen_03
@@ -28,6 +30,9 @@ fun Navigator() {
         composable(Screen.Onboard.route) { OnboardScreen_03(navController) }
 //        composable(Screen.Login.route) { LoginScreen(navController) } // 작업 예정
         composable(Screen.Main.route) { MainScreen_Cha(navController) }
+        composable(Screen.Main.route) { MainScreen_Movie(navController) }
+        composable(Screen.Main.route) { MainScreen_Full(navController) }
+//        composable(Screen.Main.route) { MainScreen_Shop(navController) }
         composable(Screen.Chat.route) { ChatScreen(navController) }
         composable(Screen.Intro.route) { IntroScreen_01(navController) }
         composable(Screen.Intro.route) { IntroScreen_02(navController) }
