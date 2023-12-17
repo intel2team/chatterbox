@@ -17,6 +17,8 @@ import androidx.room.PrimaryKey
 data class Message(
     @PrimaryKey(autoGenerate = true) val messageId: Long = 0,
     val threadId: String,
-    val userRole: Boolean,
-    val content: String,
+    val userRole: Boolean? = null,
+    val senderName: String,
+    val content: String? = null,
+    val timestamp: Long = System.currentTimeMillis()
 )

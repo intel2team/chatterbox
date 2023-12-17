@@ -9,13 +9,16 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -24,6 +27,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.chatterbox.data.local.AppDatabase
 import com.example.chatterbox.data.local.entity.User
+import com.example.chatterbox.ui.component.BottomNavigationBar
 import com.example.chatterbox.ui.navigation.BottomNavItem
 import com.example.chatterbox.ui.navigation.Screen
 import com.example.chatterbox.ui.screen.ChattingScreen
@@ -115,7 +119,8 @@ class MainActivity : ComponentActivity() {
                                         )
                                     }
                                 }
-                            ) }
+                            )
+                        }
                         composable(Screen.Profile.route) {
                             ProfileScreen(
                                 userdata = googleAuthUiClient.getSignedInUser(),
@@ -138,10 +143,59 @@ class MainActivity : ComponentActivity() {
                             backStackEntry.arguments?.getString("assistantId")
                                 ?.let { ChattingScreen(navController, it) }
                         }
-                        composable(BottomNavItem.Friends.route) { FriendsScreen(navController, googleAuthUiClient.getSignedInUser()) }
-                        composable(BottomNavItem.Chat.route) { ChatScreen(navController) }
-                        composable(BottomNavItem.Shop.route) { ShopScreen(navController) }
-                        composable(BottomNavItem.Others.route) { OthersScreen(navController) }
+                        composable(BottomNavItem.Friends.route) {
+                            Scaffold(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(Color.White),
+                                bottomBar = { BottomNavigationBar(navController = navController) }
+                            ) { innerPadding ->
+                                FriendsScreen(
+                                    navController,
+                                    googleAuthUiClient.getSignedInUser(),
+                                    innerPadding
+                                )
+                            }
+                        }
+                        composable(BottomNavItem.Chat.route) {
+                            Scaffold(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(Color.White),
+                                bottomBar = { BottomNavigationBar(navController = navController) }
+                            ) { innerPadding ->
+                                ChatScreen(
+                                    navController,
+                                    innerPadding
+                                )
+                            }
+                        }
+                        composable(BottomNavItem.Shop.route) {
+                            Scaffold(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(Color.White),
+                                bottomBar = { BottomNavigationBar(navController = navController) }
+                            ) { innerPadding ->
+                                ShopScreen(
+                                    navController,
+                                    innerPadding
+                                )
+                            }
+                        }
+                        composable(BottomNavItem.Others.route) {
+                            Scaffold(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(Color.White),
+                                bottomBar = { BottomNavigationBar(navController = navController) }
+                            ) { innerPadding ->
+                                OthersScreen(
+                                    navController,
+                                    innerPadding
+                                )
+                            }
+                        }
 
                     }
                 }

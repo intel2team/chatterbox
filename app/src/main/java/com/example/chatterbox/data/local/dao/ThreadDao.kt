@@ -12,6 +12,9 @@ interface ThreadDao {
     @Insert
     fun insertThreadAll(vararg thread: Thread)
 
+    @Query("SELECT threadId FROM thread")
+    fun getAllThreadIds(): Flow<List<String>>
+
     @Query("SELECT threadId FROM thread WHERE assistantId = :assistantId")
     fun getThreadIdByAssistantId(assistantId: String): Flow<String>
 }

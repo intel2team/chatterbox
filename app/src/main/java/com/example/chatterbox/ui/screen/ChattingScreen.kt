@@ -61,8 +61,7 @@ import com.aallam.openai.client.OpenAI
 import com.example.chatterbox.BuildConfig
 import com.example.chatterbox.data.local.AppDatabase
 import com.example.chatterbox.data.local.entity.Message
-import com.example.chatterbox.ui.screen.bottomNavScreen.Character
-import com.example.chatterbox.ui.screen.bottomNavScreen.CharacterManager
+import com.example.chatterbox.utils.CharacterManager
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -169,7 +168,7 @@ fun ChattingScreen(navController: NavHostController, newAssistantId: String) {
                                     fontWeight = FontWeight.ExtraBold
                                 )
                             ) {
-                                append("$characterNameFromAssistantId")
+                                append(characterNameFromAssistantId)
                             }
                             withStyle(
                                 style = SpanStyle(
@@ -197,6 +196,7 @@ fun ChattingScreen(navController: NavHostController, newAssistantId: String) {
                                     Message(
                                         threadId = threadId,
                                         userRole = true,
+                                        senderName = characterNameFromAssistantId,
                                         content = userText
                                     )
                                 db.messageDao().insertMessageAll(userMessage)
@@ -218,6 +218,7 @@ fun ChattingScreen(navController: NavHostController, newAssistantId: String) {
                                 val chatMessage = Message(
                                     threadId = threadId,
                                     userRole = false,
+                                    senderName = characterNameFromAssistantId,
                                     content = textContext.text.value
                                 )
                                 db.messageDao().insertMessageAll(chatMessage)
@@ -259,23 +260,25 @@ fun MessageContent(message: Message) {
             .padding(8.dp)
 //            .wrapContentHeight()
             .fillMaxWidth(),
-        horizontalAlignment = if (message.userRole) Alignment.End else Alignment.Start,
+        horizontalAlignment = if (message.userRole == true) Alignment.End else Alignment.Start,
     ) {
         Box(
             modifier = Modifier
                 .background(
-                    if (message.userRole) Color(0xFF2FCC59) else Color(0xFF22ABF3),
+                    if (message.userRole == true) Color(0xFF2FCC59) else Color(0xFF22ABF3),
                     RoundedCornerShape(10.dp)
                 ),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = message.content,
-                fontSize = 16.sp,
-                color = Color.White,
-                modifier = Modifier.padding(horizontal = 15.dp, vertical = 8.dp),
-                textAlign = if (message.userRole) TextAlign.End else TextAlign.Start
-            )
+            message.content?.let {
+                Text(
+                    text = it,
+                    fontSize = 16.sp,
+                    color = Color.White,
+                    modifier = Modifier.padding(horizontal = 15.dp, vertical = 8.dp),
+                    textAlign = if (message.userRole == true) TextAlign.End else TextAlign.Start
+                )
+            }
         }
     }
 }
