@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -33,7 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chatterbox.R
-import com.example.chatterbox.ui.screen.SignInScreen.SignInScreen
+import com.example.chatterbox.ui.screen.signInScreen.SignInScreen
 import com.example.chatterbox.utils.SignInState
 
 data class OnboardingData(
@@ -108,9 +107,13 @@ fun OnboardScreen(
             ) {
                 SignInScreen(state, onSignInClick)
             }
+
         }
+//                SignInScreen(state, onSignInClick)
+
     }
 }
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -155,7 +158,7 @@ fun OnBoardingPager(
                             contentDescription = item[page].title,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = if(page == 0) 130.dp else 130.dp)
+                                .padding(top = if (page == 0) 130.dp else 130.dp)
                                 .width(400.dp)
                                 .height(400.dp)
                         )

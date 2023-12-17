@@ -20,5 +20,6 @@ data class Message(
     val userRole: Boolean? = null,
     val senderName: String,
     val content: String? = null,
-    val timestamp: Long = System.currentTimeMillis()
+    val timestamp: Long = System.currentTimeMillis(),
+    val createAt: String? = null
 )

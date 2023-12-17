@@ -1,4 +1,4 @@
-package com.example.chatterbox.ui.screen.SignInScreen
+package com.example.chatterbox.ui.screen.signInScreen
 
 import androidx.lifecycle.ViewModel
 import com.example.chatterbox.utils.SignInResult

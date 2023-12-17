@@ -11,10 +11,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -66,6 +70,9 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(BetaOpenAI::class)
@@ -93,7 +100,8 @@ fun ChattingScreen(navController: NavHostController, newAssistantId: String) {
     val assistantId = newAssistantId.removePrefix(currentUid)
     var userText: String by remember { mutableStateOf("") }
     val characterNameFromAssistantId =
-        CharacterManager.getAllCharacters().find { it.assistantId == assistantId }?.characterName ?: ""
+        CharacterManager.getAllCharacters().find { it.assistantId == assistantId }?.characterName
+            ?: ""
 //        CharacterManager.find { it.assistantId == assistantId }?.characterName ?: ""
 
 //    var assistant: Assistant?
@@ -192,12 +200,17 @@ fun ChattingScreen(navController: NavHostController, newAssistantId: String) {
                                     )
                                 )
                                 // userText db 추가
+                                val createUserMesAt =
+                                    SimpleDateFormat("HH:mm", Locale.getDefault()).format(
+                                        Date()
+                                    )
                                 val userMessage =
                                     Message(
                                         threadId = threadId,
                                         userRole = true,
                                         senderName = characterNameFromAssistantId,
-                                        content = userText
+                                        content = userText,
+                                        createAt = createUserMesAt
                                     )
                                 db.messageDao().insertMessageAll(userMessage)
                                 isResponse = true
@@ -215,11 +228,16 @@ fun ChattingScreen(navController: NavHostController, newAssistantId: String) {
                                 val textContext =
                                     assistantMessages[0].content.first() as MessageContent.Text
                                 // textContext.value db 추가
+                                val createChatMesAt =
+                                    SimpleDateFormat("HH:mm", Locale.getDefault()).format(
+                                        Date()
+                                    )
                                 val chatMessage = Message(
                                     threadId = threadId,
                                     userRole = false,
                                     senderName = characterNameFromAssistantId,
-                                    content = textContext.text.value
+                                    content = textContext.text.value,
+                                    createAt = createChatMesAt
                                 )
                                 db.messageDao().insertMessageAll(chatMessage)
                                 isResponse = false
@@ -258,26 +276,83 @@ fun MessageContent(message: Message) {
     Column(
         modifier = Modifier
             .padding(8.dp)
-//            .wrapContentHeight()
             .fillMaxWidth(),
         horizontalAlignment = if (message.userRole == true) Alignment.End else Alignment.Start,
     ) {
-        Box(
-            modifier = Modifier
-                .background(
-                    if (message.userRole == true) Color(0xFF2FCC59) else Color(0xFF22ABF3),
-                    RoundedCornerShape(10.dp)
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            message.content?.let {
-                Text(
-                    text = it,
-                    fontSize = 16.sp,
-                    color = Color.White,
-                    modifier = Modifier.padding(horizontal = 15.dp, vertical = 8.dp),
-                    textAlign = if (message.userRole == true) TextAlign.End else TextAlign.Start
-                )
+        if (message.userRole == true) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+            ) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.Bottom)
+                ) {
+                    Text(
+                        text = message.createAt ?: "",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Light
+                    )
+                }
+                Spacer(modifier = Modifier.width(4.dp))
+                Box(
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .background(
+                            Color(0xFF2FCC59),
+                            RoundedCornerShape(10.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    message.content?.let {
+                        Text(
+                            text = it,
+                            fontSize = 16.sp,
+                            color = Color.White,
+                            modifier = Modifier.padding(horizontal = 15.dp, vertical = 8.dp),
+                            textAlign = TextAlign.End
+                        )
+                    }
+                }
+            }
+        }
+        if (message.userRole == false) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .background(
+                            Color(0xFF22ABF3),
+                            RoundedCornerShape(10.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    message.content?.let {
+                        Text(
+                            text = it,
+                            fontSize = 16.sp,
+                            color = Color.White,
+                            modifier = Modifier.padding(horizontal = 15.dp, vertical = 8.dp),
+                            textAlign = TextAlign.Start
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(4.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.Bottom)
+                ) {
+                    Text(
+                        text = message.createAt ?: "",
+                        modifier = Modifier.fillMaxWidth(),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Light
+                    )
+                }
             }
         }
     }
@@ -285,7 +360,6 @@ fun MessageContent(message: Message) {
 
 @Composable
 fun LoadingMessageWithAnimation() {
-    var progress by remember { mutableStateOf(0f) }
     val fadeInOutAlpha = rememberInfiniteTransition(label = "").animateFloat(
         initialValue = 0f,
         targetValue = 1f,

@@ -34,7 +34,7 @@ import com.example.chatterbox.ui.screen.ChattingScreen
 import com.example.chatterbox.ui.screen.bottomNavScreen.FriendsScreen
 import com.example.chatterbox.ui.screen.OnboardScreen
 import com.example.chatterbox.ui.screen.ProfileScreen
-import com.example.chatterbox.ui.screen.SignInScreen.SignInViewModel
+import com.example.chatterbox.ui.screen.signInScreen.SignInViewModel
 import com.example.chatterbox.ui.screen.bottomNavScreen.ChatScreen
 import com.example.chatterbox.ui.screen.bottomNavScreen.OthersScreen
 import com.example.chatterbox.ui.screen.bottomNavScreen.ShopScreen

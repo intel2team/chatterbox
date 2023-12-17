@@ -4,6 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,7 +21,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -84,12 +87,17 @@ fun FriendsScreen(
     var selectedCharacter by remember { mutableStateOf(Character()) }
     val scope = rememberCoroutineScope()
 
-    Column(modifier = Modifier.padding(innerPadding)) {
+    Column(
+        modifier = Modifier
+            .padding(innerPadding)
+            .background(Color.White)
+    ) {
         LazyColumn {
             item {
                 Text(
                     "친구",
                     modifier = Modifier.padding(20.dp),
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -169,93 +177,48 @@ fun FriendsScreen(
                 }
             }
         }
-    }
-    if (showBottomSheet) {
-        ModalBottomSheet(
-            modifier = Modifier.fillMaxSize(),
-            onDismissRequest = {
-                showBottomSheet = false
-            },
-            sheetState = sheetState
-        ) {
-            BottomSheetContent(selectedCharacter, onCloseClick = {
-                scope.launch { sheetState.hide() }.invokeOnCompletion {
-                    if (!sheetState.isVisible) {
-                        showBottomSheet = false
-                    }
-                }
-            },
-                onChatButtonClick = {
-                    val newAssistantId =
-                        currentUid + selectedCharacter.assistantId
-                    if (newAssistantId !in assistants) {
-                        val newAssistant = Assistant(newAssistantId, currentUid)
-                        scope.launch(Dispatchers.IO) {
-                            db.assistantDao().insertAssistantAll(newAssistant)
-                            val threadId = openAI.thread().id.id
-//                            println("*****thread id 찍어봐 : $threadId")
-                            val thread = Thread(threadId, newAssistant.assistantId)
-                            db.threadDao().insertThreadAll(thread)
-                            val message = Message(threadId = threadId,
-                            senderName = selectedCharacter.characterName!!)
-                            db.messageDao().insertMessageAll(message)
+
+        if (showBottomSheet) {
+            ModalBottomSheet(
+                modifier = Modifier.fillMaxSize(),
+                onDismissRequest = {
+                    showBottomSheet = false
+                },
+                sheetState = sheetState
+            ) {
+                BottomSheetContent(selectedCharacter, onCloseClick = {
+                    scope.launch { sheetState.hide() }.invokeOnCompletion {
+                        if (!sheetState.isVisible) {
+                            showBottomSheet = false
                         }
                     }
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        navController.navigate(Screen.Chatting.route + "/${newAssistantId}")
-                    }, 1000)
-                })
+                },
+                    onChatButtonClick = {
+                        val newAssistantId =
+                            currentUid + selectedCharacter.assistantId
+                        if (newAssistantId !in assistants) {
+                            val newAssistant = Assistant(newAssistantId, currentUid)
+                            scope.launch(Dispatchers.IO) {
+                                db.assistantDao().insertAssistantAll(newAssistant)
+                                val threadId = openAI.thread().id.id
+//                            println("*****thread id 찍어봐 : $threadId")
+                                val thread = Thread(threadId, newAssistant.assistantId)
+                                db.threadDao().insertThreadAll(thread)
+                                val message = Message(
+                                    threadId = threadId,
+                                    senderName = selectedCharacter.characterName!!
+                                )
+                                db.messageDao().insertMessageAll(message)
+                            }
+                        }
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            navController.navigate(Screen.Chatting.route + "/${newAssistantId}")
+                        }, 1000)
+                    })
+            }
         }
     }
 }
-//    Column {
-//        Row {
-//            Button(onClick = {
-//            }) {
-//                Text(text = "아이언맨")
-//            }
-//            Button(onClick = { navController.navigate(Screen.Chatting.route) }) {
-//                Text(text = "백설공주")
-//            }
-//            Button(onClick = {
-//                val newAssistantId = currentUid + CharacterManager.getAllCharacters()[3].assistantId
-//                if (newAssistantId !in assistants) {
-//                    val newAssistant = Assistant(newAssistantId, currentUid)
-//                    scope.launch(Dispatchers.IO) {
-//                        db.assistantDao().insertAssistantAll(newAssistant)
-//                        val threadId = openAI.thread().id.id
-//                        println("*****thread id 찍어봐 : $threadId")
-//                        val thread = Thread(threadId, newAssistant.assistantId)
-//                        db.threadDao().insertThreadAll(thread)
-//                    }
-//                }
-//                Handler(Looper.getMainLooper()).postDelayed({
-//                    navController.navigate(Screen.Chatting.route + "/${newAssistantId}")
-//                }, 1000)
-//            }) {
-//                Text(text = "올라프")
-//            }
-//            Button(onClick = {
-////                scope.launch {
-////                    val thread = openAI.thread()
-////                    println("222222222$thread")
-////                    val threadId = openAI.thread().id.id
-////                    println("*****22222thread id 찍어봐 : $threadId")
-////                }
-////                navController.navigate(Screen.Chat.route)
-//            }) {
-//                Text(text = "지니")
-//            }
-//        }
-//        Button(onClick = {
-//            navController.navigate(Screen.Profile.route) {
-//                popUpTo(BottomNavItem.Friends.route)
-//            }
-//        }) {
-//            Text(text = "프로필")
-//        }
-//    }
-
 
 @Composable
 fun CharacterRow(character: Character, onClick: () -> Unit) {
@@ -276,8 +239,11 @@ fun CharacterRow(character: Character, onClick: () -> Unit) {
                     Image(
                         painter = painterResource(id = character.profileImage!!),
                         contentDescription = character.characterName,
-                        modifier = Modifier.height(40.dp),
-                        contentScale = ContentScale.Crop
+                        modifier = Modifier
+                            .size(50.dp)
+                            .background(Color.White, RoundedCornerShape(16.dp))
+                            .border(1.dp, Color.Black, RoundedCornerShape(16.dp)),
+                        contentScale = ContentScale.Fit
                     )
                     Spacer(modifier = Modifier.width(10.dp))
                     Column {
