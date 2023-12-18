@@ -2,7 +2,6 @@ package com.example.chatterbox.ui.screen.bottomNavScreen
 
 import android.os.Handler
 import android.os.Looper
-import android.widget.ProgressBar
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -48,7 +47,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.widget.ContentLoadingProgressBar
 import androidx.navigation.NavHostController
 import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.client.OpenAI
@@ -103,7 +101,8 @@ fun FriendsScreen(
                     "친구",
                     modifier = Modifier.padding(20.dp),
                     fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 2.sp
                 )
             }
             item {

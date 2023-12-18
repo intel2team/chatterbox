@@ -22,9 +22,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.chatterbox.data.local.AppDatabase
 import com.example.chatterbox.data.local.entity.User
 import com.example.chatterbox.ui.component.BottomNavigationBar
@@ -36,6 +38,7 @@ import com.example.chatterbox.ui.screen.OnboardScreen
 import com.example.chatterbox.ui.screen.ProfileScreen
 import com.example.chatterbox.ui.screen.signInScreen.SignInViewModel
 import com.example.chatterbox.ui.screen.bottomNavScreen.ChatScreen
+import com.example.chatterbox.ui.screen.bottomNavScreen.DetailScreen
 import com.example.chatterbox.ui.screen.bottomNavScreen.OthersScreen
 import com.example.chatterbox.ui.screen.bottomNavScreen.ShopScreen
 import com.example.chatterbox.ui.theme.ChatterboxTheme
@@ -182,6 +185,10 @@ class MainActivity : ComponentActivity() {
                                     innerPadding
                                 )
                             }
+                        }
+                        composable(Screen.Detail.route + "/{itemImage}") { backStackEntry ->
+                            backStackEntry.arguments?.getString("itemImage")
+                                ?.let { DetailScreen(navController, it) }
                         }
                         composable(BottomNavItem.Others.route) {
                             Scaffold(
