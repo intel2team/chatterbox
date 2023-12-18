@@ -1,5 +1,7 @@
 package com.example.chatterbox.ui.screen
 
+import androidx.activity.addCallback
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -15,7 +17,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -26,12 +27,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -91,7 +97,7 @@ fun ChattingScreen(navController: NavHostController, newAssistantId: String) {
     val threadId by
     db.threadDao().getThreadIdByAssistantId(newAssistantId).collectAsState(initial = "")
     // thread id를 동일하게 써서 getMessagesByThreadId가 db에서 flow를 관찰하지 않는 듯함.
-    // boolean 값을 이용해 boolean 값이 변경되면 동작하도록 설정해보았음.
+    // boolean 값을 이용해 boolean 값이 변경되면 동작하도록 설정해보았음. ui 함수를 분리했는데 콜백함수를 사용하지 않아서 였음.
     val messageList by db.messageDao().getMessagesByThreadId(threadId)
         .collectAsState(emptyList())
 
@@ -102,33 +108,75 @@ fun ChattingScreen(navController: NavHostController, newAssistantId: String) {
     val characterNameFromAssistantId =
         CharacterManager.getAllCharacters().find { it.assistantId == assistantId }?.characterName
             ?: ""
-//        CharacterManager.find { it.assistantId == assistantId }?.characterName ?: ""
-
-//    var assistant: Assistant?
-//    LaunchedEffect(Unit) {
-//        assistant = openAI.assistant(id = AssistantId(assistantId),
-//            request = AssistantRequest(
-//                instructions = "수정 instruction",
-//                tools = listOf(AssistantTool.RetrievalTool), // tool 추가 가능
-//                model = ModelId("gpt-4"), // 모델 변경
-//                fileIds = listOf(FileId("file-abc123"), FileId("file-abc123")), // 파일 추가가능
-//            )
-//        )
-//    }
+    var isResponse: Boolean by remember { mutableStateOf(false) }
+    var isEnabled: Boolean by remember { mutableStateOf(false) }
+    LaunchedEffect(userText) {
+        isEnabled = userText.isNotBlank() && !isResponse
+    }
     val scrollState = rememberLazyListState()
     if (messageList.isNotEmpty()) {
         LaunchedEffect(messageList.lastIndex) {
             scrollState.scrollToItem(index = messageList.lastIndex)
         }
     }
-    var isResponse: Boolean by remember { mutableStateOf(false) }
+    // 뒤로 가기 버튼 클릭시 답변 생성 중이라면 dialog로 경고 표시
+    // 뒤로가기 버튼 이벤트 감지
+    var showDialog by remember { mutableStateOf(false) }
+    val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+    DisposableEffect(showDialog) {
+        val callback = backDispatcher?.addCallback {
+            if (isResponse) {
+                showDialog = true
+            } else {
+                navController.navigateUp()
+            }
+        }
+        onDispose {
+            callback?.remove()
+        }
+    }
+    if (showDialog) {
+        AlertDialog(
+            shape = RoundedCornerShape(16.dp),
+            containerColor = Color.White,
+            icon = { Icons.Default.Warning },
+            iconContentColor = Color.Yellow,
+            onDismissRequest = { /* 아무 작업 없음 */ },
+            title = { Text("경고") },
+            text = { Text("답변이 아직 생성되지 않았습니다.\n나가시겠습니까?") },
+            confirmButton = {
+                Button(
+                    colors = ButtonDefaults.buttonColors(contentColor = Color.White, containerColor = Color(0xFF22ABF3)),
+                    onClick = {
+                        navController.navigateUp()
+                        showDialog = false
+                    }
+                ) {
+                    Text("나가기")
+                }
+            },
+            dismissButton = {
+                Button(
+                    colors = ButtonDefaults.buttonColors(contentColor = Color(0xFF22ABF3), containerColor = Color.White),
+                    onClick = {
+                        showDialog = false
+                    }
+                ) {
+                    Text("취소")
+                }
+            }
+        )
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFE6F2FF))
     ) {
         Column {
-            TopBar(navController, characterNameFromAssistantId)
+            TopBar(navController, characterNameFromAssistantId, isResponse) {
+                showDialog = true
+            }
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -243,7 +291,7 @@ fun ChattingScreen(navController: NavHostController, newAssistantId: String) {
                                 isResponse = false
                             }
                         },
-                        enabled = userText.isNotBlank() || isResponse
+                        enabled = isEnabled
                     ) {
                         Icon(imageVector = Icons.Filled.Send, contentDescription = "send")
                     }
@@ -254,12 +302,23 @@ fun ChattingScreen(navController: NavHostController, newAssistantId: String) {
 }
 
 @Composable
-fun TopBar(navController: NavHostController, characterNameFromAssistantId: String) {
+fun TopBar(
+    navController: NavHostController,
+    characterNameFromAssistantId: String,
+    isResponse: Boolean,
+    onClick: () -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(onClick = { navController.navigateUp() }) {
+        IconButton(onClick = {
+            if (isResponse) {
+                onClick()
+            } else {
+                navController.navigateUp()
+            }
+        }) {
             Icon(imageVector = Icons.Filled.ArrowBackIosNew, contentDescription = "arrow back")
         }
         Text(

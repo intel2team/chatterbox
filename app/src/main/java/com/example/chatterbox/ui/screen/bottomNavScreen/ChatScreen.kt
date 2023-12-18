@@ -16,9 +16,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -77,31 +81,52 @@ fun ChatScreen(navController: NavHostController, innerPadding: PaddingValues) {
     Column(
         modifier = Modifier
             .padding(innerPadding)
-            .fillMaxSize()
             .background(Color.White)
     ) {
         Text(
-            text = "채팅",
-            fontWeight = FontWeight.ExtraBold
+            "채팅",
+            modifier = Modifier.padding(start = 20.dp, top = 20.dp),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
         )
         Box(
             modifier = Modifier
-                .height(150.dp)
+                .background(Color.White, RoundedCornerShape(8.dp))
+                .height(240.dp)
                 .fillMaxWidth()
-                .background(Color.White, RoundedCornerShape(8.dp)),
+                .padding(horizontal = 20.dp, vertical = 15.dp),
             contentAlignment = Alignment.BottomStart
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ratatouille),
                 contentDescription = "poster",
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(shape = RoundedCornerShape(8.dp))
+
             )
-            Text(text = "라따뚜이 2024년 1월 출시")
-            Text(text = "륑기니 / 안톤이고 / 레미 / 구스토 출시")
+            Box(
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .fillMaxWidth()
+                    .height(108.dp)
+                    .background(Color(0xCBDADADA), RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp)),
+                contentAlignment = Alignment.BottomStart
+            ) {
+                Column(
+                    modifier = Modifier.padding(start = 8.dp, bottom = 12.dp),
+                ) {
+                    Text(text = "라따뚜이", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                    Text(text = "2024년 1월 출시", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                    Text(text = "륑기니 / 안톤이고 / 레미 / 구스토 출시", fontSize = 12.sp, fontWeight = FontWeight.Light)
+                }
+            }
         }
-        Spacer(modifier = Modifier.height(10.dp))
         LazyColumn() {
+            item {
+                Divider(modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 10.dp), thickness = 1.dp, color = Color.LightGray)
+            }
             items(matchedCharacters) { matchedCharacter ->
                 val lastMessage =
                     db.messageDao().getLastMessageBySender(matchedCharacter.characterName!!)
@@ -155,9 +180,12 @@ fun ChatScreen(navController: NavHostController, innerPadding: PaddingValues) {
                                     )
                                 }
                             }
-                            lastMessage.createAt?.let { Text(text = it,
-                                fontSize = 10.sp, fontWeight = FontWeight.Light
-                            ) }
+                            lastMessage.createAt?.let {
+                                Text(
+                                    text = it,
+                                    fontSize = 10.sp, fontWeight = FontWeight.Light
+                                )
+                            }
                         }
                     }
                 }

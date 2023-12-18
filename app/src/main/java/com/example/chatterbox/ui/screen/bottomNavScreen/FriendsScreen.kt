@@ -2,6 +2,7 @@ package com.example.chatterbox.ui.screen.bottomNavScreen
 
 import android.os.Handler
 import android.os.Looper
+import android.widget.ProgressBar
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,8 +21,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -44,6 +48,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.widget.ContentLoadingProgressBar
 import androidx.navigation.NavHostController
 import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.client.OpenAI
@@ -108,26 +113,28 @@ fun FriendsScreen(
                             .fillMaxWidth()
                             .background(Color.White)
                             .clickable { navController.navigate(Screen.Profile.route) }
-                            .padding(horizontal = 20.dp, vertical = 5.dp)
+                            .padding(horizontal = 20.dp, vertical = 5.dp),
+                        contentAlignment = Alignment.Center
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Row {
                                 GlideImage(
                                     modifier = Modifier
-                                        .size(40.dp)
-                                        .clip(CircleShape),
+                                        .size(50.dp)
+                                        .background(Color.White, RoundedCornerShape(16.dp))
+                                        .border(1.dp, Color.Black, RoundedCornerShape(16.dp))
+                                        .clip(shape = RoundedCornerShape(16.dp)),
                                     imageModel = { userdata.profilePictureUrl },
                                     imageOptions = ImageOptions(
-                                        contentScale = ContentScale.Crop,
+                                        contentScale = ContentScale.Fit,
                                         alignment = Alignment.Center
                                     ),
-                                    loading = { Text("로딩중") },
+                                    loading = { CircularProgressIndicator() },
                                     failure = {
-                                        Text(text = "failed.")
+                                        Icon(imageVector = Icons.Filled.Close, contentDescription = null)
                                     }
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
@@ -145,13 +152,15 @@ fun FriendsScreen(
             item {
                 AdBanner() // 광고 배너
             }
-            // 즐겨찾기
             item {
                 Text(
                     "즐겨찾기",
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
                     fontWeight = FontWeight.Bold
                 )
+            }
+            item {
+                Divider(modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 10.dp), thickness = 1.dp, color = Color.LightGray)
             }
 //            items(favoriteFriends) { friend ->
 //                FriendItem(
@@ -166,9 +175,12 @@ fun FriendsScreen(
             item {
                 Text(
                     "친구",
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
                     fontWeight = FontWeight.Bold
                 )
+            }
+            item {
+                Divider(modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 10.dp), thickness = 1.dp, color = Color.LightGray)
             }
             items(characters) { character ->
                 CharacterRow(character) {
