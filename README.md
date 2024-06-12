@@ -1,6 +1,6 @@
 <p align="center"><img src="https://github.com/intel2team/chatterbox/assets/125545555/b941927d-8fd4-4445-87b9-157ffaa4a306"  width="800" height="400"/></p>
 <br/>
-<h2>🔮 FABULA - '키덜트'들을 위한 대화 서비스</h2>
+<h2>🔮 FABULA - '키덜트'들을 위한 채팅 서비스</h2>
 
 '[인텔] AI For Future Workforce를 활용한 인공지능 인재 양성과정'의 팀 프로젝트  
 
