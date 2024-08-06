@@ -15,7 +15,11 @@
 - 개발 환경: Kotlin, Android Studio  
 - 라이브러리: Compose, Navigation, Room, Firebase Auth, landscapist-glide
 
-### 2. 유저플로우
+### 2. 프롬프트 엔지니어링
+<img width="1308" alt="image" src="https://github.com/user-attachments/assets/77c72318-58e6-40e3-a89b-0af8b5dd4023">
+
+
+### 3. 유저플로우
 <table>
   <tr>
     <td><img src="https://github.com/intel2team/chatterbox/assets/125545555/00ffa534-dfa6-4952-ac84-fed365acd3f4" width="200"><br/><div align="center">로그인 화면</div></td>
@@ -29,10 +33,10 @@
   </tr>
 </table>
 
-### 3. Local DB 구성
+### 4. Local DB 구성
 ![image](https://github.com/intel2team/chatterbox/assets/125545555/2a44ab99-5b2f-40a0-944c-5d6c5d7e0648)
 
-### 4. 시연 영상
+### 5. 시연 영상
 https://github.com/intel2team/chatterbox/assets/125545555/af8c3184-9f49-4134-9b62-a3c80a83b732
 
 
